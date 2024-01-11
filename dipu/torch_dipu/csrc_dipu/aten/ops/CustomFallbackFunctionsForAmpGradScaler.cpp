@@ -86,16 +86,19 @@ at::Tensor& custom_fallback_dipu__amp_update_scale_(at::Tensor& current_scale,
               "found_inf must be a float tensor.");
   if (static_cast<bool>(found_inf.item<float>())) {
     current_scale *= backoff_factor;
-    growth_tracker[0] = 0;
+    // growth_tracker[0] = 0;
+    growth_tracker.fill_(0);
   } else {
     // Entering this branch means we just carried out a successful step,
     // so growth_tracker is incremented before comparing to growth_interval.
     auto successful = growth_tracker.item<int>() + 1;
     if (successful == growth_interval) {
       current_scale *= growth_factor;
-      growth_tracker[0] = 0;
+      // growth_tracker[0] = 0;
+      growth_tracker.fill_(0);
     } else {
-      growth_tracker[0] = successful;
+      // growth_tracker[0] = successful;
+      growth_tracker.fill_(0);
     }
   }
   return current_scale;

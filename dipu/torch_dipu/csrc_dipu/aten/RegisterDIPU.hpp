@@ -74,6 +74,12 @@ void dipu_fallback(const c10::OperatorHandle& op, DispatchKeySet dispatch_keys,
       }                                                                       \
       DIPU_OP_LOG_WARNING_ONCE((opname) << " will be fallback to cpu"         \
                                         << "\n");                             \
+      const char* env = std::getenv("DIPU_DISABLE_CUSTOM_FALLBACK_OPS");      \
+      if ((env != nullptr) &&                                                 \
+          ((std::string(env) + ',').find(std::string(opname) + ',') <         \
+           (strlen(env) - 1))) {                                              \
+        break;                                                                \
+      }                                                                       \
       m.impl(opname, TORCH_FN(custom_fallback_func));                         \
     }                                                                         \
   } while (false);
